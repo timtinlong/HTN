@@ -49,8 +49,6 @@ Markdown==3.3.3
 MarkupSafe==1.1.1
 matplotlib==3.3.3
 mistune==0.8.4
-# Editable install with no version control (motpy==0.0.8)
--e c:\users\timot\anaconda3\envs\ssd_mn_v1\lib\site-packages
 nbclient==0.5.1
 nbconvert==6.0.7
 nbformat==5.1.2

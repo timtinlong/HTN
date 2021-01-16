@@ -125,7 +125,7 @@ def clean_bbox_dict(d, d_bbox):
     return d, d_bbox
 
 parser = argparse.ArgumentParser(description='Process arguments')
-parser.add_argument('-m', '--model', type=str, default='yolov3')
+parser.add_argument('-m', '--model', type=str, default='MobileNet')
 parser.add_argument('-i', '--input_video', type=str, default='mall')
 parser.add_argument('-c', '--confidence', type=float, default=0.5)
 parser.add_argument('-sm', '--SlowMode', type=int, default=0)
@@ -143,7 +143,7 @@ if args.flask_bool:
     app = Flask(__name__)
     # route http posts to this method
 
-@app.route('/api/test', methods=['GET'])
+# @app.route('/api/test', methods=['GET'])
 def main():
     ID_only = []
 
