@@ -143,7 +143,7 @@ if args.flask_bool:
     app = Flask(__name__)
     # route http posts to this method
 
-# @app.route('/api/test', methods=['GET'])
+@app.route('/api/test', methods=['GET'])
 def main():
     ID_only = []
 
@@ -291,7 +291,9 @@ def main():
                 xmax = int(x + w)
                 ymax = int(y + h)
                 bboxes.append([xmin, ymin, xmax, ymax])
-        else:
+        
+        # if empty list
+        if not class_lst:
             continue
 
         ''' detection adapated from https://learnopencv.com/goturn-deep-learning-based-object-tracking/ '''
@@ -420,7 +422,7 @@ def main():
         if verbose: logger.debug(f'number of people: {num_people}, time of day: {time_stamp}')
 
         # draw line for people counting
-        img = draw_line(img, 700, img.shape[1], 800, 480, (0, 0, 255), 5)
+        img = draw_line(img, 600, 500, 740, 390, (0, 0, 255), 5)
 
         cv.imshow('window', img)
                 # stop demo by pressing 'q'
