@@ -114,6 +114,10 @@ verbose = args.verbose
 if args.model == 'yolov3':
     CONFIG_PATH, WEIGHTS_PATH = 'yolov3.cfg', 'yolov3.weights'
 
+if not os.path.isfile(WEIGHTS_PATH):
+    logger.debug('downloading model...')
+    urlretrieve('https://pjreddie.com/media/files/yolov3.weights', WEIGHTS_PATH)
+
 if args.input_video == 'mall':
     input_video = 'sample_mall_vid.mp4'
     fx, fy = 1, 1
@@ -330,6 +334,7 @@ while(True):
             elif ID not in arr_d:
                 arr_d.append([ID, class_ID, time_stamp, bp_curr, ub_curr, hb_curr, t_curr, sc_curr])
 
+    # print(arr_d)
 
     num_people = len(people_track_lst)
 
