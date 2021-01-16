@@ -118,10 +118,10 @@ def write_stats(img, num_people, time_stamp, update_text_font):
     return np.asarray(img)
 
 def clean_bbox_dict(d, d_bbox):
-    print(d)
-    print(d_bbox)
-    print('cleaning')
-    input('press to continue..')
+    # print(d)
+    # print(d_bbox)
+    # print('cleaning')
+    # input('press to continue..')
     return d, d_bbox
 
 parser = argparse.ArgumentParser(description='Process arguments')
