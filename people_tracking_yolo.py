@@ -159,9 +159,18 @@ def main():
     if args.input_video == 'mall':
         input_video = 'sample_mall_vid.mp4'
         fx, fy = 1, 1
+        x1_loc = 140
+        y1_loc = 200
+        x2_loc = 340
+        y2_loc = 250
+
     elif args.input_video == 'shop':
         input_video = 'sample_shop_vid.mp4'
         fx, fy = 0.7, 0.7
+        x1_loc = 600
+        y1_loc = 500
+        x2_loc = 740
+        y2_loc = 390
 
     update_text_font = ImageFont.truetype("arial.ttf", 15)
 
@@ -422,7 +431,7 @@ def main():
         if verbose: logger.debug(f'number of people: {num_people}, time of day: {time_stamp}')
 
         # draw line for people counting
-        img = draw_line(img, 600, 500, 740, 390, (0, 0, 255), 5)
+        img = draw_line(img, x1_loc, y1_loc, x2_loc, y2_loc, (0, 0, 255), 5)
 
         cv.imshow('window', img)
                 # stop demo by pressing 'q'

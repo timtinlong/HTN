@@ -316,6 +316,8 @@ def main():
         tracks = tracker.active_tracks(min_steps_alive=-1)
         if verbose: logger.debug(f'tracks: {tracks}')
 
+
+        print(detections)
         # prepare text for each person detected
         # text_arr = []
 
