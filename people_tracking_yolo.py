@@ -141,9 +141,9 @@ args = parser.parse_args()
 # Initialize the Flask application
 if args.flask_bool:
     app = Flask(__name__)
-    # route http posts to this method
+    # route http posts to this method 
 
-@app.route('/api/test', methods=['GET'])
+# @app.route('/api/test', methods=['GET'])
 def main():
     ID_only = []
 
