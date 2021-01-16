@@ -117,8 +117,9 @@ def write_stats(img, num_people, time_stamp, update_text_font):
     return np.asarray(img)
 
 def remove_unavailable(d, d_bbox):
-    
-
+    print(d)
+    print(d_bbox)
+    input('press to continue..')
     return d, d_bbox
 
 parser = argparse.ArgumentParser(description='Process arguments')
@@ -128,15 +129,18 @@ parser.add_argument('-c', '--confidence', type=float, default=0.5)
 parser.add_argument('-sm', '--SlowMode', type=int, default=0)
 parser.add_argument('-sb', '--save_bool', type=int, default=1)
 parser.add_argument('-v', '--verbose', type=int, default=0)
+parser.add_argument('-fb', '--flask_bool', type=int, default=1)
+
 
 # run_opts = tf.compat.v1.RunOptions(report_tensor_allocations_upon_oom = True)
 
 args = parser.parse_args()
 
 # Initialize the Flask application
-app = Flask(__name__)
+if args.flask_bool:
+    app = Flask(__name__)
+    # route http posts to this method
 
-# route http posts to this method
 @app.route('/api/test', methods=['GET'])
 def main():
     ID_only = []
@@ -220,7 +224,7 @@ def main():
             continue
         # while True:
         ret, img = cap.read()
-
+        clear_ctr += 1
         # save if end of video file
         if img is None:
             if args.save_bool:
@@ -383,7 +387,6 @@ def main():
                         ID: {'object': class_ID, 'time': time_stamp, 'status': status_stamp, 'height': px_h, 'backpack': bp_curr, 'umbrella': ub_curr, 'handbag': hb_curr, 'tie': t_curr, 'suitcase': sc_curr}
                     })
 
-
                     d_bbox.update({
                         ID: {'x1': [round(bound_box[0])], 'y1': [round(bound_box[1])], 'x2': [round(bound_box[2])], 'y2': [round(bound_box[3])]}
                     })
@@ -399,7 +402,7 @@ def main():
 
         # print(d_bbox)
         # every 20 frames, we remove idle status objects from the dictionaries
-        if clear_ctr % 20:
+        if clear_ctr % 2:
             d, d_bbox = remove_unavailable(d, d_bbox)
 
         # print(d)
@@ -424,13 +427,12 @@ def main():
             with open('shop.json', 'w') as json_file:
                 json.dump(d, json_file, indent=4)
         
-        return Response(response=str(d), status=200,mimetype="application/json")
+        # uncomment to route!
+        if args.flask_bool: return Response(response=str(d), status=200,mimetype="application/json")
             
-
-
-
-
-
     # start flask app
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    if args.flask_bool:
+        app.run(debug=True, host='0.0.0.0')
+    else:
+        main()
