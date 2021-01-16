@@ -24,6 +24,7 @@ import time
 import argparse
 import configparser
 from PIL import Image, ImageFont, ImageDraw 
+from collections import deque 
 
 import json
 
@@ -61,9 +62,9 @@ def custom_draw_track(img, track, object_ID, random_color: bool = True, fallback
     return img
 ''' for customization '''
 
-def draw_line(img, x1, y1, x2, y2):
+def draw_line(img, x1, y1, x2, y2, color, th):
     print(round(x1))
-    img = cv2.line(img, (int(round(x1)), int(round(y1))), (int(round(x2)), int(round(y2))), [255,255,255], 3)
+    img = cv2.line(img, (int(round(x1)), int(round(y1))), (int(round(x2)), int(round(y2))), color, th)
     return img
 
 def distance_2d(x1, y1, x_lst, y_lst, img):
@@ -73,7 +74,7 @@ def distance_2d(x1, y1, x_lst, y_lst, img):
         dist.append(math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 ))
     index_min = min(range(len(dist)), key=dist.__getitem__)
 
-    img = draw_line(img, x1, y1, x_lst[index_min], y_lst[index_min])
+    img = draw_line(img, x1, y1, x_lst[index_min], y_lst[index_min], [255, 255, 255], 3)
 
     return index_min, img
 
@@ -116,9 +117,10 @@ def write_stats(img, num_people, time_stamp, update_text_font):
     cv.imshow('window', img)
     return np.asarray(img)
 
-def remove_unavailable(d, d_bbox):
+def clean_bbox_dict(d, d_bbox):
     print(d)
     print(d_bbox)
+    print('cleaning')
     input('press to continue..')
     return d, d_bbox
 
@@ -141,7 +143,7 @@ if args.flask_bool:
     app = Flask(__name__)
     # route http posts to this method
 
-@app.route('/api/test', methods=['GET'])
+# @app.route('/api/test', methods=['GET'])
 def main():
     ID_only = []
 
@@ -269,7 +271,6 @@ def main():
                     confidences.append(float(confidence))
                     classIDs.append(classID)
 
-
         indices = cv.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
         class_lst = []
 
@@ -290,12 +291,15 @@ def main():
                 xmax = int(x + w)
                 ymax = int(y + h)
                 bboxes.append([xmin, ymin, xmax, ymax])
-        
+        else:
+            continue
+
         ''' detection adapated from https://learnopencv.com/goturn-deep-learning-based-object-tracking/ '''
         detections = [Detection(box=bbox) for bbox in bboxes]
         if verbose: logger.debug(f'detections: {detections}')
         
         # edited MOTPY tracker source code
+        
         tracker.step(detections, class_lst)
 
         tracks = tracker.active_tracks(min_steps_alive=-1)
@@ -390,7 +394,8 @@ def main():
                     d_bbox.update({
                         ID: {'x1': [round(bound_box[0])], 'y1': [round(bound_box[1])], 'x2': [round(bound_box[2])], 'y2': [round(bound_box[3])]}
                     })
-                else:
+                # every two frames, we append 
+                elif clear_ctr % 2:
                     # it's already in the list, we append the position
                     d_bbox[ID]['x1'].append(round(bound_box[0]))
                     d_bbox[ID]['y1'].append(round(bound_box[1]))
@@ -403,17 +408,19 @@ def main():
         # print(d_bbox)
         # every 20 frames, we remove idle status objects from the dictionaries
         if clear_ctr % 2:
-            d, d_bbox = remove_unavailable(d, d_bbox)
+            d, d_bbox = clean_bbox_dict(d, d_bbox)
 
         # print(d)
         # print(ID_only)
         num_people = len(people_track_lst)
 
         # get time stamp
-
         img = write_stats(img, num_people, time_stamp, update_text_font)
 
         if verbose: logger.debug(f'number of people: {num_people}, time of day: {time_stamp}')
+
+        # draw line for people counting
+        img = draw_line(img, 700, img.shape[1], 800, 480, (0, 0, 255), 5)
 
         cv.imshow('window', img)
                 # stop demo by pressing 'q'
