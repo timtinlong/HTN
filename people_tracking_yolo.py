@@ -78,7 +78,6 @@ def save_video(filename, volume, image_shape):
     return
 
 def write_stats(img, num_people, time_stamp, update_text_font):
-    print(img.shape)
     font = cv2.FONT_HERSHEY_SIMPLEX 
     title_text = 'n = ' + str(num_people) + ' ; ' + str(time_stamp)
     # org 
@@ -116,10 +115,10 @@ if args.model == 'yolov3':
     CONFIG_PATH, WEIGHTS_PATH = 'yolov3.cfg', 'yolov3.weights'
 
 if args.input_video == 'mall':
-    input_video = '/Users/Timot/Desktop/Hackathon/HTN/sample_mall_vid.mp4'
+    input_video = 'sample_mall_vid.mp4'
     fx, fy = 1, 1
 elif args.input_video == 'shop':
-    input_video = '/Users/Timot/Desktop/Hackathon/HTN/sample_shop_vid.mp4'
+    input_video = 'sample_shop_vid.mp4'
     fx, fy = 0.7, 0.7
 
 update_text_font = ImageFont.truetype("arial.ttf", 15)
@@ -327,7 +326,6 @@ while(True):
                     index = [i for i, elem in enumerate(arr_d) if owner_ID in elem]
                     # insert this accessory to the respective position (+3 because of other var like time stamps etc)
                     arr_d[index[0]][accessory_ref_lst.index(class_ID)+3] = ID
-                    print(accessory_ref_lst.index(class_ID)+3)
             # add to dictionary (changed to list) if it doesn't exist
             elif ID not in arr_d:
                 arr_d.append([ID, class_ID, time_stamp, bp_curr, ub_curr, hb_curr, t_curr, sc_curr])
@@ -351,116 +349,3 @@ while(True):
     if args.SlowMode:
         input("Press Enter to continue...")
 
-
-
-
-
-
-
-
-# class PeopleDetector(object):
-#     def __init__(self,
-#                  weights_path: str = WEIGHTS_PATH,
-#                  config_path: str = CONFIG_PATH):
-
-#         if not os.path.isfile(weights_path) or not os.path.isfile(config_path):
-#             raise Exception('No model pre-loaded... need to load the caffe model')
-
-#         # Give the configuration and weight files for the model and load the network.
-#         net = cv.dnn.readNetFromDarknet(config_path, weights_path)
-#         net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
-#         self.net = net
-
-#         # determine the output layer
-#         ln = net.getLayerNames()
-#         ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-#         self.ln = ln
-
-#         print('model loaded..')
-
-#     def process(self, frame, conf_threshold=0.5):
-#         blob = cv.dnn.blobFromImage(img, 1/255.0, (416, 416), swapRB=True, crop=False)
-
-#         # asdf
-        
-#         self.net.setInput(blob)
-#         detections = self.net.forward()
-#         print(len(detections))
-#         for out in detections:
-#             print(out.shape)
-
-
-#         # convert output from OpenCV detector to tracker expected format [xmin, ymin, xmax, ymax]
-#         bboxes = []
-#         class_id = []
-#         print(detections.shape)
-#         for i in range(detections.shape[1]):
-#             confidence = detections[0, 0, i, 2]
-#             if confidence > conf_threshold:
-#                 xmin = int(detections[0, 0, i, 3] * frame.shape[1])
-#                 ymin = int(detections[0, 0, i, 4] * frame.shape[0])
-#                 xmax = int(detections[0, 0, i, 5] * frame.shape[1])
-#                 ymax = int(detections[0, 0, i, 6] * frame.shape[0])
-#                 bboxes.append([xmin, ymin, xmax, ymax])
-#                 class_id.append(int(detections[0, 0, i, 1])) # Class label
-
-#         return bboxes
-
-
-# def run():
-#     # prepare multi object tracker
-#     model_spec = {'order_pos': 1, 'dim_pos': 2,
-#                   'order_size': 0, 'dim_size': 2,
-#                   'q_var_pos': 5000., 'r_var_pos': 0.1}
-
-#     dt = 1 / 15.0  # assume 15 fps
-#     tracker = MultiObjectTracker(dt=dt, model_spec=model_spec)
-#     input_video = args.input_video
-
-#     # open camera
-#     cap = cv2.VideoCapture(input_video)
-
-#     # vid = imageio.get_reader(input_video, 'ffmpeg')
-
-#     people_detector = PeopleDetector()
-
-#     while(True):
-#         # only process every 30 frames
-
-#     # while True:
-#         ret, frame = cap.read()
-
-#         # frame = cv2.resize(frame, dsize=None, fx=0.5, fy=0.5)
-
-#         # run face detector on current frame
-#         bboxes = people_detector.process(frame, args.confidence)
-#         detections = [Detection(box=bbox) for bbox in bboxes]
-#         logger.debug(f'detections: {detections}')
-
-#         tracker.step(detections)
-#         tracks = tracker.active_tracks(min_steps_alive=5)
-#         logger.debug(f'tracks: {tracks}')
-
-#         # preview the boxes on frame
-#         for det in detections:
-#             draw_detection(frame, det)
-
-#         for track in tracks:
-#             draw_track(frame, track)
-
-#         if cv2.waitKey(1) & 0xFF == ord('q') or ret==False :
-#             cap.release()
-#             cv2.destroyAllWindows()
-#             break
-#         cv2.imshow('frame', frame)
-
-#         # stop demo by pressing 'q'
-#         if cv2.waitKey(int(1000 * dt)) & 0xFF == ord('q'):
-#             break
-
-#     # cap.release()
-#     cv2.destroyAllWindows()
-
-
-# if __name__ == "__main__":
-#     run()
